@@ -1,4 +1,6 @@
 context("Classifier")
+data("headneck_ref")
+data("input_mel")
 
 chetah <- CHETAHclassifier(input = input_mel, ref_cells = headneck_ref)
 

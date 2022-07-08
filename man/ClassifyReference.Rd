@@ -6,8 +6,13 @@
 A good reference should have almost no mixture
 between reference cells.}
 \usage{
-ClassifyReference(ref_cells, ref_ct = "celltypes", ref_c = "counts",
-  return = FALSE, ...)
+ClassifyReference(
+  ref_cells,
+  ref_ct = "celltypes",
+  ref_c = "counts",
+  return = FALSE,
+  ...
+)
 }
 \arguments{
 \item{ref_cells}{the reference, similar to
@@ -39,5 +44,6 @@ A good reference should have almost no mixture
 between reference cells.
 }
 \examples{
+data('headneck_ref')
 ClassifyReference(ref_cells = headneck_ref)
 }

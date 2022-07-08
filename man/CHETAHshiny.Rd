@@ -20,8 +20,3 @@ Opens a web page in your default browser
 \description{
 Launch a web page to interactively go trough the classification
 }
-\examples{
-\dontrun{
-CHETAHshiny(input = input_mel)
-}
-}

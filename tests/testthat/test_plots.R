@@ -1,4 +1,6 @@
 context("Plots")
+data("headneck_ref")
+data("input_mel")
 test_that("return colors", { 
     expect_is(PlotCHETAH(input_mel, return_col = TRUE), "character")
 })

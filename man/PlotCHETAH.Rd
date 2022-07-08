@@ -6,8 +6,16 @@
 + the corresponding classification tree,
 colored with the same colors}
 \usage{
-PlotCHETAH(input, redD = NA, interm = FALSE, return = FALSE,
-  tree = TRUE, pt.size = 1, return_col = FALSE, col = NULL)
+PlotCHETAH(
+  input,
+  redD = NA,
+  interm = FALSE,
+  return = FALSE,
+  tree = TRUE,
+  pt.size = 1,
+  return_col = FALSE,
+  col = NULL
+)
 }
 \arguments{
 \item{input}{a SingleCellExperiment on which \code{\link{CHETAHclassifier}} has been run}
@@ -37,7 +45,8 @@ Plot the CHETAH classification on 2D visulization like t-SNE
 colored with the same colors
 }
 \examples{
-## Standard plot (final types colored)
+data('input_mel')
+#' ## Standard plot (final types colored)
 PlotCHETAH(input = input_mel)
 
 ## Intermediate types colored

@@ -4,8 +4,15 @@
 \alias{PlotTree}
 \title{Plots the chetah classification tree with nodes numbered}
 \usage{
-PlotTree(input, col = NULL, col_nodes = NULL, return = FALSE,
-  no_bgc = FALSE, plot_limits = c(-0.4, 0.1), labelsize = 6)
+PlotTree(
+  input,
+  col = NULL,
+  col_nodes = NULL,
+  return = FALSE,
+  no_bgc = FALSE,
+  plot_limits = c(-0.4, 0.1),
+  labelsize = 6
+)
 }
 \arguments{
 \item{input}{a SingleCellExperiment on which \code{\link{CHETAHclassifier}} has been run}
@@ -30,5 +37,6 @@ A ggplot object of the classification tree
 Plots the chetah classification tree with nodes numbered
 }
 \examples{
+data('input_mel')
 PlotTree(input = input_mel)
 }

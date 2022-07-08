@@ -3,6 +3,7 @@
 #'
 #' @docType data
 #' @format This is a SingleCellExperiment
+#' @usage data('input_mel')
 #' @references Tirosh et al. (2016) Science 6282:189-196
 #'
 #' @source for the original data: \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE72056}{GEO}
@@ -14,6 +15,7 @@
 #' @docType data
 #' @format A list of expression matrices. Each object is named as the cell type of the cells in that matrix.
 #' Each matrix has the cell (names) in the colums and the genes in the rows.
+#' @usage data('headneck_ref')
 #' @references Puram et al. (2017) Cancer Cell 171:1611-1624
 #'
 #' @source for the original data: \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103322}{GEO}

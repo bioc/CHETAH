@@ -103,10 +103,13 @@
 #' are called \strong{intermediate types}.  \cr
 #' @export
 #' @importFrom bioDist spearman.dist
+#' @import SingleCellExperiment
 #' @importFrom stats as.dendrogram cutree ecdf hclust p.adjust wilcox.test
 #' @importFrom S4Vectors DataFrame
 #' @importFrom SummarizedExperiment assay assays
 #' @examples
+#' data('input_mel')
+#' data('headneck_ref')
 #' ## Melanoma data from Tirosh et al. (2016) Science
 #' input_mel
 #' ## Head-Neck data from Puram et al. (2017) Cancer Cell
@@ -149,12 +152,14 @@ CHETAHclassifier <- function (input,
     cor_method <- match.arg(cor_method)
     gs_method <- match.arg(gs_method)
     clust_method <- match.arg(clust_method)
-	
+
     if (!is.null(ref_cells)) ref_check <- ref_cells else ref_check <- ref_profiles
-	if (any(c("", " ") %in% ref_check[[ref_ct]])) stop("The cell types in the references contains an empty type '' or ' '. Please replace with a character string")
+    if (0 %in% colnames(ref_check)) { stop("please don't use '0' as a cell type name") }
+    if (any(c("", " ") %in% ref_check[[ref_ct]])) stop("The cell types in the references contains an empty type '' or ' '. Please replace with a character string")
     if (!(ref_ct %in% names(SingleCellExperiment::colData(ref_check)))) {
-        stop(paste0("Please add the cell type data in the colData of your reference and supply it's name to 'ref_ct').
-                    Current colData:", paste(names(SingleCellExperiment::colData(ref_check)), collapse = " ")))
+        rc_names = paste(names(SingleCellExperiment::colData(ref_check)), collapse = " ")
+        stop("Please add the cell type data in the colData of your reference and supply it's name to 'ref_ct').
+              Current colData:", rc_names)
     }; rm(ref_check)
     
     input_c <- TestCHETAH(input = input, input_c = input_c,
@@ -243,7 +248,7 @@ CHETAHclassifier <- function (input,
     hc <- Env$tree
     coor <- cbind("y" = heights, "x" = rep(NA, length(heights)))
     coordinates <- dendextend::get_nodes_xy(as.dendrogram(hc))
-    coordinates <- coordinates[coordinates[,2] != 0, ]
+    coordinates <- coordinates[coordinates[,2] != 0, ,drop = FALSE]
     coor[ ,2] <- coordinates[,1][match(coor[ ,1], coordinates[ ,2])]
     
     ## Remove the initial columns of the DataFrames
@@ -659,6 +664,8 @@ doCorrelation <- function(ref_profiles, genes, input, ref_cells,
 #' a charachter vector of the cell types with the names of the cells
 #' @export
 #' @examples
+#' data('input_mel')
+#' data('headneck_ref')
 #' ## Classify all cells
 #' input_mel <- Classify(input_mel, 0)
 #'
@@ -735,7 +742,9 @@ MeanRef <- function (ref,
 #' @importFrom dendextend color_branches
 #' @importFrom dendextend color_labels
 #' @importFrom stats as.dendrogram
-#' @examples PlotTree(input = input_mel)
+#' @examples 
+#' data('input_mel')
+#' PlotTree(input = input_mel)
 PlotTree <- function(input, col = NULL,
                      col_nodes = NULL,
                      return = FALSE,
@@ -826,14 +835,15 @@ PlotTree <- function(input, col = NULL,
 #' A ggplot object
 #' @export
 #' @import ggplot2
-#' @importFrom gplots colorpanel
 #' @examples
+#' data('input_mel')
 #' CD8 <- assay(input_mel)['CD8A', ]
 #' PlotTSNE(toplot = CD8, input = input_mel)
 PlotTSNE <- function (toplot, input, redD = NA, col = NULL, return = FALSE,
                       limits = NULL, pt.size = 1, shiny = NULL,
                       y_limits = NULL, x_limits = NULL, legend_label = '') {
     redD <- TestCHETAH(input = input, redD = redD)
+    redDname <- redD
     redD <- SingleCellExperiment::reducedDim(input, redD)
     ## Merge redD and toplot
     if (is.null(names(toplot)) & is.null(dim(toplot))) names(toplot) <- rownames(redD)
@@ -843,7 +853,9 @@ PlotTSNE <- function (toplot, input, redD = NA, col = NULL, return = FALSE,
     colnames(toplot)[1] <- "variable"
     redD <- data.frame(redD)
     redD$rn <- rownames(redD)
-    colnames(redD) <- c("tSNE_1", "tSNE_2", "rn")
+    colnames(redD) <- c(paste0(redDname, c("_1", "_2")), "rn")
+    Dim1 <- colnames(redD)[1]
+    Dim2 <- colnames(redD)[2]
     data <- merge(toplot, redD, by = "rn")
     
     ## Initial plot
@@ -851,9 +863,9 @@ PlotTSNE <- function (toplot, input, redD = NA, col = NULL, return = FALSE,
         text <- paste0('cell_label: ', data$rn, '<br>', data$shiny, data$variable)
         if ('key' %in% colnames(data)) text <- paste0(text, '<br>','cell type: ', data$key)
         data$text <- text
-        plot <- ggplot(data, aes_string(x='tSNE_1', y='tSNE_2', text = 'text'))
+        plot <- ggplot(data, aes(x=Dim1, y=Dim2, text = text))
     } else {
-        plot <- ggplot(data, aes_string(x='tSNE_1', y='tSNE_2'))
+        plot <- ggplot(data, aes_string(x=Dim1, y=Dim2))
     }
     plot <- plot +
         theme_classic() +
@@ -879,8 +891,8 @@ PlotTSNE <- function (toplot, input, redD = NA, col = NULL, return = FALSE,
                         max(toplot[,1])+(0.01*max(toplot[,1])))
         }
         if (is.null(col)) {
-            col <- c(gplots::colorpanel(n = 50, low = '#2f2bad', mid = '#93cfe2', high = '#fffaaa'),
-                     gplots::colorpanel(n = 50, low = '#fffaaa', mid = "#ffad66", high = '#d60000'))
+            col <- c(colorpanel(n = 50, low = '#2f2bad', mid = '#93cfe2', high = '#fffaaa'),
+                     colorpanel(n = 50, low = '#fffaaa', mid = "#ffad66", high = '#d60000'))
         }
         plot <- plot +
             scale_color_gradientn(colors = col, limits = limits)
@@ -955,7 +967,8 @@ PlotBox <- function(toplot, class, col = NULL, grad_col = NULL,
 #' @importFrom cowplot plot_grid
 #' @importFrom grDevices rainbow rgb
 #' @examples
-#' ## Standard plot (final types colored)
+#' data('input_mel')
+#' #' ## Standard plot (final types colored)
 #' PlotCHETAH(input = input_mel)
 #'
 #' ## Intermediate types colored
@@ -1045,11 +1058,11 @@ PlotCHETAH <- function(input, redD = NA, interm = FALSE, return = FALSE,
 #'
 #' @export
 #'
-#' @importFrom gplots colorpanel
 #' @importFrom corrplot corrplot
 #' @importFrom SummarizedExperiment assay assays
 #' @importFrom stats cor
 #' @examples
+#' data('headneck_ref')
 #' CorrelateReference(ref_cells = headneck_ref)
 CorrelateReference <- function(ref_cells = NULL, ref_profiles = NULL, ref_ct = "celltypes",
                                ref_c = NA, return = FALSE, n_genes = 200,
@@ -1091,8 +1104,8 @@ CorrelateReference <- function(ref_cells = NULL, ref_profiles = NULL, ref_ct = "
         }
     }
     ## plot
-    cols <- c(gplots::colorpanel(n = 10, low = '#2f2bad', mid = '#93cfe2', high = '#fffdd3'),
-              gplots::colorpanel(n = 10, low = '#fffdd3', mid = "#ffad66", high = '#d60000'))
+    cols <- c(colorpanel(n = 10, low = '#2f2bad', mid = '#93cfe2', high = '#fffdd3'),
+              colorpanel(n = 10, low = '#fffdd3', mid = "#ffad66", high = '#d60000'))
     corrplot::corrplot(cors, method = "square", order = "hclust",
                        col = cols, mar = c(0, 0, 2, 0), type = 'upper')
     
@@ -1122,10 +1135,10 @@ CorrelateReference <- function(ref_cells = NULL, ref_profiles = NULL, ref_ct = "
 #' A good reference would classify nearly 100% of cells of type A to type A.
 #' @export
 #'
-#' @importFrom gplots colorpanel
 #' @importFrom corrplot corrplot
 #' @importFrom graphics text
 #' @examples
+#' data('headneck_ref')
 #' ClassifyReference(ref_cells = headneck_ref)
 ClassifyReference <- function(ref_cells, ref_ct = "celltypes",
                               ref_c = "counts",
@@ -1166,12 +1179,12 @@ ClassifyReference <- function(ref_cells, ref_ct = "celltypes",
     
     ## Plot
     cols <- c(rep('black', 20),
-              gplots::colorpanel(n = 10, low = '#2f2bad', mid = '#93cfe2', high = '#fffdd3'),
-              gplots::colorpanel(n = 10, low = '#fff6b5', mid = "#ffad66", high = '#d60000'))
+              colorpanel(n = 10, low = '#2f2bad', mid = '#93cfe2', high = '#fffdd3'),
+              colorpanel(n = 10, low = '#fff6b5', mid = "#ffad66", high = '#d60000'))
     a <- corrplot::corrplot(cors[ ,seq_len(lngt)], method = "square", order = "hclust",
-                            col = cols, cl.lim = c(0,1), mar = c(0, 0, 2, 0))
-    text(-3.5, seq_len(nrow(cors)), labels = round(cors[ ,'Nodes'], 2)[rev(rownames(a))])
-    text(-3.5, nrow(cors)+1, '(%) in nodes')
+                            col = cols, col.lim = c(0,1), mar = c(0, 0, 2, 0))
+    text(-5.5, seq_len(nrow(cors)), labels = round(cors[ ,'Nodes'], 2)[rev(rownames(cors))])
+    text(-5.5, nrow(cors)+1, '(%) in nodes')
     
     if (return) return(cors)
 } ## ClassifyReference
@@ -1216,10 +1229,10 @@ nodeDown <- function(conf, prof, node, thresh, nodetypes, prev_clas = NULL) {
 EqualGenes <- function(inp, ref) {
     common <- intersect(rownames(inp), rownames(ref))
     if (length(common) == 0) {
-        stop("Non of the genes names (rownames) in the reference: ",
-             paste0(rownames(ref)[seq_len(10)],  ", "),
-             "\noverlapped with those of the input:",
-             paste0(rownames(inp)[seq_len(10)], ", "),
+      ref_examp = paste0(rownames(ref)[seq_len(10)],  ", ")
+      input_examp = paste0(rownames(inp)[seq_len(10)], ", ")
+        stop("Non of the genes names (rownames) in the reference: ", ref_examp,
+             "\noverlapped with those of the input:", input_examp,
              "\n Make sure you are using the same type of gene ids (ensemble, symbol, etc) for both datasets.")
     }
     ref <- ref[common, ]
@@ -1254,7 +1267,8 @@ SelectNodeTypes <- function (input, whichnode) {
 #'
 #' @examples
 #' ## In the example data replace all T-cell subtypes by "T cell"
-#' input_mel <- RenameBelowNode(input = input_mel, whichnode = 7, replacement = "T cell")
+#' data('input_mel')
+#' #' input_mel <- RenameBelowNode(input = input_mel, whichnode = 7, replacement = "T cell")
 RenameBelowNode <- function(input, whichnode, replacement,
                             nodes_exclude = NULL,
                             types_exclude = NULL,
@@ -1300,11 +1314,6 @@ ch_env <- new.env(parent = emptyenv())
 #' @return
 #' Opens a web page in your default browser
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' CHETAHshiny(input = input_mel)
-#' }
 CHETAHshiny <- function (input, redD = NA, input_c = NA) {
     
     ## Search for the shinyApp in the package directory
@@ -1355,20 +1364,59 @@ TestInput <- function (input, assessor, name, parameter, selected, object) {
     ## Test if assessor(object) is named
     if (!is.null(names(assessor(input))) & !("" %in% names(assessor(input))[1])) {
         if (length(assessor(input)) == 0) {
-            stop(paste("No", name, "in the SingleCellExperiment object.",
-                       "Please refer to the CHETAH vignette on how to prepare your data: browseVignettes('CHETAH')"))
+            stop("No ", name, " in the SingleCellExperiment object. ",
+                 "Please refer to the CHETAH vignette on how to prepare your data: browseVignettes('CHETAH')")
         }
         if (is.na(selected)) {
             selected <- names(assessor(input))[1]
         } else {
             if (!(selected %in% names(assessor(input)))) {
-                stop(paste0("The specified ", parameter ," is not available. ",
-                            "Please choose one of 'names(", name, "(", object, "))': ",
-                            paste(names(assessor(input)), collapse = " ")), call. = FALSE)
+              ass_names = paste(names(assessor(input)), collapse = " ")
+                stop("The specified ", parameter ," is not available. ",
+                      "Please choose one of 'names(", name, "(", object, "))': ",
+                       ass_names, call. = FALSE)
             }
         }
         return(selected)
     } else {
-        stop(paste0("Please name your: '", name, "(", object, "))'. This is essential for the method"))
+        stop("Please name your: '", name, "(", object, "))'. This is essential for the method")
     }
+}
+
+### ---------------------------------------------------------------------------
+colorpanel = function (n, low, mid, high) {
+  # function from the CRAN gplots package. gtools is orphaned, so reused the code
+  # see: cran.r-project.org/web/packages/gplots/
+  if (missing(mid) || missing(high)) {
+    low <- grDevices::col2rgb(low)
+    if (missing(high)) 
+      high <- grDevices::col2rgb(mid)
+    else high <- grDevices::col2rgb(high)
+    red <- seq(low[1, 1], high[1, 1], length = n)/255
+    green <- seq(low[3, 1], high[3, 1], length = n)/255
+    blue <- seq(low[2, 1], high[2, 1], length = n)/255
+  }
+  else {
+    isodd <- n %% 2 == 1
+    if (isodd) {
+      n <- n + 1
+    }
+    low <- grDevices::col2rgb(low)
+    mid <- grDevices::col2rgb(mid)
+    high <- grDevices::col2rgb(high)
+    lower <- floor(n/2)
+    upper <- n - lower
+    red <- c(seq(low[1, 1], mid[1, 1], length = lower), seq(mid[1, 
+                                                                1], high[1, 1], length = upper))/255
+    green <- c(seq(low[3, 1], mid[3, 1], length = lower), 
+               seq(mid[3, 1], high[3, 1], length = upper))/255
+    blue <- c(seq(low[2, 1], mid[2, 1], length = lower), 
+              seq(mid[2, 1], high[2, 1], length = upper))/255
+    if (isodd) {
+      red <- red[-(lower + 1)]
+      green <- green[-(lower + 1)]
+      blue <- blue[-(lower + 1)]
+    }
+  }
+  rgb(red, blue, green)
 }

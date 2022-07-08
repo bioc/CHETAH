@@ -4,15 +4,29 @@
 \alias{CHETAHclassifier}
 \title{Identification of cell types aided by hierarchical clustering}
 \usage{
-CHETAHclassifier(input, ref_cells = NULL, ref_profiles = NULL,
-  ref_ct = "celltypes", input_c = NA, ref_c = NA, thresh = 0.1,
-  gs_method = c("fc", "wilcox"), cor_method = c("spearman", "kendall",
-  "pearson", "cosine"), clust_method = c("average", "single", "complete",
-  "ward.D2", "ward.D", "mcquitty", "median", "centroid"),
-  clust_dist = bioDist::spearman.dist, n_genes = 200,
-  pc_thresh = 0.2, p_thresh = 0.05, fc_thresh = 1.5,
-  subsample = FALSE, fix_ngenes = TRUE, plot.tree = FALSE,
-  only_pos = FALSE, print_steps = FALSE)
+CHETAHclassifier(
+  input,
+  ref_cells = NULL,
+  ref_profiles = NULL,
+  ref_ct = "celltypes",
+  input_c = NA,
+  ref_c = NA,
+  thresh = 0.1,
+  gs_method = c("fc", "wilcox"),
+  cor_method = c("spearman", "kendall", "pearson", "cosine"),
+  clust_method = c("average", "single", "complete", "ward.D2", "ward.D", "mcquitty",
+    "median", "centroid"),
+  clust_dist = bioDist::spearman.dist,
+  n_genes = 200,
+  pc_thresh = 0.2,
+  p_thresh = 0.05,
+  fc_thresh = 1.5,
+  subsample = FALSE,
+  fix_ngenes = TRUE,
+  plot.tree = FALSE,
+  only_pos = FALSE,
+  print_steps = FALSE
+)
 }
 \arguments{
 \item{input}{\strong{required}: an input SingleCellExperiment.
@@ -133,6 +147,8 @@ For other cells, assignment will stop in a node. These classifications
 are called \strong{intermediate types}.  \cr
 }
 \examples{
+data('input_mel')
+data('headneck_ref')
 ## Melanoma data from Tirosh et al. (2016) Science
 input_mel
 ## Head-Neck data from Puram et al. (2017) Cancer Cell
