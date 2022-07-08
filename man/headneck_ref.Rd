@@ -5,13 +5,15 @@
 \alias{headneck_ref}
 \title{A SingleCellExperiment with celltypes in the "celltypes" colData.
 A subset of the Head-Neck data from Puram et al. (2017) Cancer Cell.}
-\format{A list of expression matrices. Each object is named as the cell type of the cells in that matrix.
-Each matrix has the cell (names) in the colums and the genes in the rows.}
+\format{
+A list of expression matrices. Each object is named as the cell type of the cells in that matrix.
+Each matrix has the cell (names) in the colums and the genes in the rows.
+}
 \source{
 for the original data: \href{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103322}{GEO}
 }
 \usage{
-headneck_ref
+data('headneck_ref')
 }
 \description{
 A SingleCellExperiment with celltypes in the "celltypes" colData.

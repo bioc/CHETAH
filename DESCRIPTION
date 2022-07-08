@@ -5,47 +5,47 @@ Version: 1.12.0
 Date: 2021-11-20
 Authors@R: c(person("Jurrian", "de Kanter", email = "jurriandekanter@gmail.com",  role = c("aut", "cre")),
              person("Philip", "Lijnzaad", email = "p.lijnzaad@prinsesmaximacentrum.nl", role = c("aut")))
-Description: CHETAH (CHaracterization of cEll Types Aided by Hierarchical classification) is an accurate, selective and fast scRNA-seq classifier. 
+Description: CHETAH (CHaracterization of cEll Types Aided by Hierarchical classification) is an accurate, selective and fast scRNA-seq classifier.
 	  Classification is guided by a reference dataset,
     preferentially also a scRNA-seq dataset. By hierarchical clustering of the reference data, CHETAH creates
 	  a classification tree that enables a step-wise, top-to-bottom classification. Using a novel stopping rule,
 	  CHETAH classifies the input cells to the cell types of the references and to "intermediate types": more general
 	  classifications that ended in an intermediate node of the tree.
 Imports:
-    gplots,
     shiny,
     plotly,
     pheatmap,
     bioDist,
     dendextend,
     cowplot,
-  	corrplot,
-  	grDevices,
-  	stats,
-  	graphics,
-  	reshape2,
-  	S4Vectors,
-  	SummarizedExperiment
+    corrplot,
+    grDevices,
+    stats,
+    graphics,
+    reshape2,
+    S4Vectors,
+    SummarizedExperiment
 Depends:
-    R (>= 3.6),
-	  ggplot2,
-  	SingleCellExperiment
+    R (>= 4.2),
+    ggplot2,
+    SingleCellExperiment
 License: file LICENSE
 Encoding: UTF-8
-biocViews: 
+biocViews:
   	Classification,
   	RNASeq,
   	SingleCell,
-  	Clustering
-RoxygenNote: 6.1.1
-Suggests: 
+  	Clustering,
+	GeneExpression,
+	ImmunoOncology
+RoxygenNote: 7.2.0
+Suggests:
     knitr,
     rmarkdown,
     Matrix,
     testthat,
     vdiffr
 VignetteBuilder: knitr
-LazyData: true
+LazyData: false
 BugReports: https://github.com/jdekanter/CHETAH
 URL: https://github.com/jdekanter/CHETAH
-PackageStatus: Deprecated

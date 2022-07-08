@@ -5,8 +5,15 @@
 \title{In the CHETAH classification, replace the name of a Node
 and all the names of the final and intermediate types under that Node.}
 \usage{
-RenameBelowNode(input, whichnode, replacement, nodes_exclude = NULL,
-  types_exclude = NULL, node_only = FALSE, return_clas = FALSE)
+RenameBelowNode(
+  input,
+  whichnode,
+  replacement,
+  nodes_exclude = NULL,
+  types_exclude = NULL,
+  node_only = FALSE,
+  return_clas = FALSE
+)
 }
 \arguments{
 \item{input}{a SingleCellExperiment on which \code{\link{CHETAHclassifier}} has been run}
@@ -32,5 +39,6 @@ and all the names of the final and intermediate types under that Node.
 }
 \examples{
 ## In the example data replace all T-cell subtypes by "T cell"
-input_mel <- RenameBelowNode(input = input_mel, whichnode = 7, replacement = "T cell")
+data('input_mel')
+#' input_mel <- RenameBelowNode(input = input_mel, whichnode = 7, replacement = "T cell")
 }

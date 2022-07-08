@@ -5,9 +5,17 @@
 \title{Correlate all reference profiles to each other
 using differentially expressed genes.}
 \usage{
-CorrelateReference(ref_cells = NULL, ref_profiles = NULL,
-  ref_ct = "celltypes", ref_c = NA, return = FALSE, n_genes = 200,
-  fix_ngenes = TRUE, print_steps = FALSE, only_pos = FALSE)
+CorrelateReference(
+  ref_cells = NULL,
+  ref_profiles = NULL,
+  ref_ct = "celltypes",
+  ref_c = NA,
+  return = FALSE,
+  n_genes = 200,
+  fix_ngenes = TRUE,
+  print_steps = FALSE,
+  only_pos = FALSE
+)
 }
 \arguments{
 \item{ref_cells}{the reference, similar to
@@ -39,5 +47,6 @@ Correlate all reference profiles to each other
 using differentially expressed genes.
 }
 \examples{
+data('headneck_ref')
 CorrelateReference(ref_cells = headneck_ref)
 }

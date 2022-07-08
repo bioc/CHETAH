@@ -27,6 +27,8 @@ NOTE: In case of bulk reference profiles: only the correlations will be used,
 as the data does not allow for profile or confidence scores to be calculated.
 }
 \examples{
+data('input_mel')
+data('headneck_ref')
 ## Classify all cells
 input_mel <- Classify(input_mel, 0)
 
@@ -37,5 +39,5 @@ input_mel <- Classify(input_mel, 1)
 input_mel <- Classify(input_mel)
 
 ## Return only the classification vector
-input_mel <- Classify(input_mel, 1, return_clas = TRUE)
+celltypes <- Classify(input_mel, 1, return_clas = TRUE)
 }

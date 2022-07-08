@@ -1,5 +1,5 @@
 library(testthat)
 library(CHETAH)
 library(vdiffr)
-
+Sys.unsetenv("R_TESTS")
 test_check("CHETAH")

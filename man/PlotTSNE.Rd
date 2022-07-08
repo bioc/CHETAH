@@ -4,9 +4,19 @@
 \alias{PlotTSNE}
 \title{Plots a variable on a t-SNE}
 \usage{
-PlotTSNE(toplot, input, redD = NA, col = NULL, return = FALSE,
-  limits = NULL, pt.size = 1, shiny = NULL, y_limits = NULL,
-  x_limits = NULL, legend_label = "")
+PlotTSNE(
+  toplot,
+  input,
+  redD = NA,
+  col = NULL,
+  return = FALSE,
+  limits = NULL,
+  pt.size = 1,
+  shiny = NULL,
+  y_limits = NULL,
+  x_limits = NULL,
+  legend_label = ""
+)
 }
 \arguments{
 \item{toplot}{the variable that should be plotted. Either a character vector
@@ -45,6 +55,7 @@ A ggplot object
 Plots a variable on a t-SNE
 }
 \examples{
+data('input_mel')
 CD8 <- assay(input_mel)['CD8A', ]
 PlotTSNE(toplot = CD8, input = input_mel)
 }
